@@ -1,8 +1,8 @@
 FROM golang:1.19-alpine
 WORKDIR /docker-first
-COPY . /docker-first
+COPY / ./
 RUN go mod download
-RUN go build -o ./docker-first ./main.go
+RUN go build -o ./docker-first ./cmd/docker-first
 
 EXPOSE 80
 
