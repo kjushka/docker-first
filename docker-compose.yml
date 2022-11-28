@@ -1,21 +1,14 @@
-version: "3.8"
-
-networks:
-  network:
-    driver: bridge
+version: "3.9"
 
 services:
   go-service:
-    build: .
+    image: imigaka/docker-first:latest
     depends_on:
-      redis:
-        condition: service_healthy
-      pgsql:
-        condition: service_healthy
-    container_name: docker-first
+      - pgsql
+      - redis
     environment:
       #PGS
-      - PG_HOST=postgres
+      - PG_HOST=pgsql
       - PG_PORT=5432
       - PG_USER=postgres
       - PG_PASS=postgres
@@ -29,15 +22,17 @@ services:
       #common
       - NAME=Anton
     ports:
-      - "8080:8080"
-    networks:
-      - network
+      - "8000:8080"
     user: root
     restart: on-failure
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
 
   redis:
     image: redis:4-alpine
-
+    container_name: redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -52,8 +47,6 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_REPLICATION_MODE=master
-    networks:
-      - network
     restart: on-failure
   pgsql:
     container_name: postgres
@@ -71,6 +64,4 @@ services:
       interval: 2s
       timeout: 10s
       retries: 5
-    restart: always
-    networks:
-      - network
+    restart: on-failure

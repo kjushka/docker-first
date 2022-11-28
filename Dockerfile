@@ -4,6 +4,4 @@ COPY / ./
 RUN go mod download
 RUN go build -o ./docker-first ./cmd/docker-first
 
-EXPOSE 80
-
 CMD [ "./docker-first" ]
